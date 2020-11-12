@@ -4,11 +4,16 @@ var speed = 5
 
 var direction = Vector3()
 
+remote func _set_position(pos):
+	global_transform.origin = pos
+
 func _physics_process(_delta):
 	direction = get_input()
 	
 	if direction != Vector3():
-		var _moved = move_and_slide(direction * speed, Vector3.UP)
+		if is_network_master():
+			var _moved = move_and_slide(direction * speed, Vector3.UP)
+		rpc_unreliable("_set_position", global_transform.origin)
 
 
 func get_input():
